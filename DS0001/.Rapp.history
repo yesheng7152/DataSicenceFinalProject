@@ -1,0 +1,4 @@
+load("/Users/yeshengchen/Downloads/ICPSR_20520/DS0001/20520-0001-Data.rda")
+data <- load("/Users/yeshengchen/Downloads/ICPSR_20520/DS0001/20520-0001-Data.rda")
+head(data)
+data
