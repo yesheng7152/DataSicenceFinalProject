@@ -38,8 +38,25 @@
 #---------------------------------------------------------------------------
 
 library(prettyR)
-load(file = '20520-0001-Data.rda')
-lbls <- sort(levels(da20520.0001$V2))
-lbls <- (sub("^\\([0-9]+\\) +(.+$)", "\\1", lbls))
-da20520.0001$V2<- as.numeric(sub("^\\(0*([0-9]+)\\).+$", "\\1", da20520.0001$V2))
-da20520.0001$V2 <- add.value.labels(da20520.0001$V2, lbls)
+library(readr)
+da=load(file = '20520-0001-Data.rda') 
+da=get(da)
+# Function to change the string value to numeric value
+strip_num<-function(colmn){
+  lbls<-sort(levels(colmn))
+  lbls<-(sub("^\\([0-9]+\\) +(.+$)", "\\1", lbls))
+  colmn<- as.numeric(sub("^\\(0*([0-9]+)\\).+$", "\\1", colmn))
+  colmn <- add.value.labels(colmn, lbls)
+  return (colmn)
+}
+
+ckk<-data.frame()
+
+# Getting columns from the 2015 survery and selected columns are the ones that we felt represents sucess. Combined them into the result dataframe
+result<- data.frame(da$V404A,da$V407,da$V411,da$V415E,da$V419,da$V420,da$V429A,da$V429B,da$V429C,da$V429C,da$V429D,da$V434,da$V448L,da$V447,da$V449)
+# change factor values into number values, prepare for future traning 
+result[2:3]<-lapply(result[2:3],strip_num)
+result[5:15]<-lapply(result[5:15], strip_num)
+
+predictor1992<-dataframe()
+
