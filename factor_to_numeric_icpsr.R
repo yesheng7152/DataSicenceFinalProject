@@ -58,5 +58,14 @@ result<- data.frame(da$V404A,da$V407,da$V411,da$V415E,da$V419,da$V420,da$V429A,d
 result[2:3]<-lapply(result[2:3],strip_num)
 result[5:15]<-lapply(result[5:15], strip_num)
 
-predictor1992<-dataframe()
+predictor1992<-data.frame(da$V1,da$V128,da$V139,da$V148,da$C4,da$C1,da$V28,da$V30,da$V18,da$V22,da$V23,da$V65,da$V85,da$C14,da$C16,da$V61,da$V94,da$V119,da$V66,da$V69)
+predictor1992[6:13]<-lapply(predictor1992[6:13],strip_num)
+predictor1992[16:20]<-lapply(predictor1992[16:20],strip_num)
+
+
+
+
+
+
+
 
