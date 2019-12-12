@@ -1,6 +1,7 @@
 library(prettyR)
 library(readr)
 library(dplyr)
+library(factoextra)  ## Used for PCA visualizations
 da=load("~/Desktop/2019 Fall/Data Science/Final Project/20520-0001-Data.rda")
 da=get(da)
 # Function to change the string value to numeric value
@@ -13,13 +14,13 @@ strip_num<-function(colmn){
 }
 
 # Getting columns from the 2015 survery and selected columns are the ones that we felt represents sucess. Combined them into the result dataframe
-# V404A - Residence type/other, V407 - Highest school grade/year completed, V411 - Present work situation, V415E - Current job Treiman prestige scores,
+# V404 - Residence type, V407 - Highest school grade/year completed, V411 - Present work situation, V415E - Current job Treiman prestige scores,
 # V419 - Current occupation satisfaction, V420 - Present income satisfaction, V429A - Respondent speak English well, V429B - Respondent understand English well,
 # V429C - Respondent read English well, V429D - Respondent write English well, V434 - Respodent race/ethnic identity importance, V448L - Respodent detention/jail/prison
 # V447 - Country feels like home, V449 - Respondent health. 
-result<- data.frame(da$CASEID,da$V404A,da$V407,da$V411,da$V415E,da$V419,da$V420,da$V429A,da$V429B,da$V429C,da$V429D,da$V434,da$V448L,da$V447,da$V449)
+result<- data.frame(da$CASEID,da$V404,da$V407,da$V411,da$V415E,da$V419,da$V420,da$V429A,da$V429B,da$V429C,da$V429D,da$V434,da$V448L,da$V447,da$V449)
 # change factor values into number values, prepare for future traning 
-result[3:4]<-lapply(result[3:4],strip_num)
+result[2:4]<-lapply(result[2:4],strip_num)
 result[6:15]<-lapply(result[6:15], strip_num)
 #find the average of respondent's english skills
 result$AverageEnglishSkill <- (result$da.V429A+result$da.V429B+result$da.V429C+result$da.V429D)/4
@@ -29,7 +30,7 @@ result$da.V429B<-NULL
 result$da.V429C<-NULL
 result$da.V429D<-NULL
 #update the colnnames 
-colnames(result) <- c("caseId", "Residence type/other", "Highest education completed", "Present work situation", "Current job prestige scores", "Current occupation satisfaction",
+colnames(result) <- c("caseId", "Residence type", "Highest education completed", "Present work situation", "Current job prestige scores", "Current occupation satisfaction",
                       "Present income satisfaction", "Respodent identity importance","Respodent detention/jail/prison","Country feels like home", "Respondent health","Average English Skill")
 #Remove rows that contains NAs 
 result<-na.omit(result)
@@ -49,31 +50,76 @@ colnames(predictor1992)<-c("caseId", "desired job prestige score-1992", "GPA","P
                            "number household members-1992","Respondent sex","Respondent US stay length-1992", "Respondent job preference-1992", "felt discriminated-1992",
                            "Depression-1992","Self-esteem-1992","education expectation-1992","Hours/day on HW-1992","Good grades importance-1992","Reason Dad came to US",
                            "Reason Mom came to US")
+#Removing NA values for PCA
+predictor1992<-na.omit(predictor1992)
 
 # CASEID - Case Id, V228 - Present living situation, V230 - Total number people living w/respondent, V243 - Economic situation/3 year ago,
 # V324B - Parent divorced/separated past year, V324C - Parent re/married past year, V324D - Parent lost job/past year, V324E - Respondent ill/disabled past year,
 # V324F - Parent died past year, V206 - Gender, V223 - Respodent US Citizenship, V264 - respondent job classification, V211 - Don't feel save at school, 
 # V261 - attainable education level, V262 - Paren education preference, V294 - Respondent hour studying, V319 - Good grade importance, C5 - English Knowledge,
-# C2 - Private school, C15 - Depression, C17 - Self-esteem, C19 - Familism index, C18 - Family cohesion, V332 - GPA, V337 - Dropped out by 1995, V357 - Percent daily school attendance
+# C15 - Depression, C17 - Self-esteem, C19 - Familism index, C18 - Family cohesion, V332 - GPA, V337 - Dropped out by 1995, V357 - Percent daily school attendance, C2 - Private school
 predictor1995<-data.frame(da$CASEID,da$V228,da$V230,da$V243,da$V324B,da$V324C,da$V324D,da$V324E,da$V324F,da$V206,da$V223,da$V264,
-                          da$V211,da$V261,da$V262,da$V294,da$V319,da$C5,da$C2,da$C15,da$C17,da$C19,da$C18,da$V332,da$V337,da$V357)
+                          da$V211,da$V261,da$V262,da$V294,da$V319,da$C5,da$C15,da$C17,da$C19,da$C18,da$V332,da$V337,da$V357,da$C2)
 # change factor values into number values, prepare for future traning 
 predictor1995[2]<-lapply(predictor1995[2],strip_num)
 predictor1995[4:17]<-lapply(predictor1995[4:17],strip_num)
-predictor1995[19]<-lapply(predictor1995[19],strip_num)
-predictor1995[25]<-lapply(predictor1995[25],strip_num)
+predictor1995[24]<-lapply(predictor1995[24],strip_num)
+predictor1995[26]<-lapply(predictor1995[26],strip_num)
 
 #Update the colnnames 
 colnames(predictor1995)<-c("caseId", "Present living situation-1995", "number people living w/respondent-1995","Economic situation/3 year ago-1995","Parent divorced/separated past year-1995",
                            "Parent re/married past year-1995","Parent lost job/past year-1995","Respondent ill/disabled past year-1995",
                            "Parent died past year-1995","Respondent sex-1995","Respodent US Citizenship-1995", "Respondent job classification-1995", 
                            "Don't feel save at school-1995","attainable education level-1995","Paren education preference-1995","Respondent hour studying-1995",
-                           "Good grade importance-1995","English Knowledge-1995","Private school-1995","Depression-1995","Self-esteem-1995","Familism index-1995",
-                           "Family cohesion-1995","GPA-1995","Dropped out by 1995","Percent daily school attendance-1995")
+                           "Good grade importance-1995","English Knowledge-1995","Depression-1995","Self-esteem-1995","Familism index-1995",
+                           "Family cohesion-1995","GPA-1995","Dropped out by 1995","Percent daily school attendance-1995","Private school-1995")
+#Removing the null values for PCA
+predictor1995<-na.omit(predictor1995)
 
 #Combine the three data frames together using their caseid, base on result data frame. Since we only want to look at respondents who paticipated and have all infor on
 # the last survey. 
 Final<-left_join(x = result, y = predictor1992, by = "caseId")
 Final<-left_join(x=Final, y=predictor1995, by= "caseId")
+Final<-na.omit(Final)
+
+#### Visualizations#####
+#PCA on result
+P <- prcomp(result[2:12], scale = TRUE)
+fviz_pca_biplot(P, repel = FALSE, # Avoid text overlapping (doesn't scale to large datasets)
+                col.var = "red", # Variables color
+                col.ind = "black")  
+
+fviz_eig(P, addlabels = TRUE)
+#From the previous we see that from demiensions 1-8 they are all important
+fviz_contrib(P, choice = "var", axes = 1, top = 6) 
+fviz_contrib(P, choice = "var", axes = 2, top = 6)
+fviz_contrib(P, choice = "var", axes = 3, top = 6)
+fviz_contrib(P, choice = "var", axes = 4, top = 6)
+fviz_contrib(P, choice = "var", axes = 5, top = 6)
+fviz_contrib(P, choice = "var", axes = 6, top = 6)
+fviz_contrib(P, choice = "var", axes = 7, top = 6)
+fviz_contrib(P, choice = "var", axes = 8, top = 6)
+
+#PCA on Predictor1992
+P1992<-prcomp(predictor1992[2:19],scale = TRUE)
+fviz_pca_biplot(P1992, repel = FALSE, # Avoid text overlapping (doesn't scale to large datasets)
+                col.var = "red",
+                col.ind = "black")# Variables color
+fviz_eig(P1992, addlabels = TRUE)
+
+#From the previous we see that demensions from 1 to 4 are all important
+fviz_contrib(P1992, choice = "var", axes = 1, top = 6)
+fviz_contrib(P1992, choice = "var", axes = 2, top = 6)
+fviz_contrib(P1992, choice = "var", axes = 3, top = 6)
+fviz_contrib(P1992, choice = "var", axes = 4, top = 6)
+
+#PCA on Predictor1995
+P1995<-prcomp(predictor1995[2:25],scale = TRUE)
+fviz_pca_biplot(P1995, repel = FALSE, # Avoid text overlapping (doesn't scale to large datasets)
+                col.var = "red",
+                col.ind = "black")# Variables color
+fviz_eig(P1995, addlabels = TRUE)
+fviz_contrib(P1992, choice = "var", axes = 1, top = 6)
+fviz_contrib(P1992, choice = "var", axes = 2, top = 6)
 
 
