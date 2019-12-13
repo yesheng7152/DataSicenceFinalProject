@@ -107,7 +107,7 @@ fviz_pca_biplot(P1992, repel = FALSE, # Avoid text overlapping (doesn't scale to
                 col.ind = "black")# Variables color
 fviz_eig(P1992, addlabels = TRUE)
 
-#From the previous we see that demensions from 1 to 4 are all important
+#From the previous we see that demensions from 1 to 4 are the most important
 fviz_contrib(P1992, choice = "var", axes = 1, top = 6)
 fviz_contrib(P1992, choice = "var", axes = 2, top = 6)
 fviz_contrib(P1992, choice = "var", axes = 3, top = 6)
@@ -119,7 +119,18 @@ fviz_pca_biplot(P1995, repel = FALSE, # Avoid text overlapping (doesn't scale to
                 col.var = "red",
                 col.ind = "black")# Variables color
 fviz_eig(P1995, addlabels = TRUE)
+#From the previous we see that demensions from 1 to 4 are the most important
 fviz_contrib(P1992, choice = "var", axes = 1, top = 6)
 fviz_contrib(P1992, choice = "var", axes = 2, top = 6)
+fviz_contrib(P1992, choice = "var", axes = 3, top = 6)
+fviz_contrib(P1992, choice = "var", axes = 4, top = 6)
+
+
+### Sucess Index#####
+# Based on a study conducted by Populace, in partnership with Gallup: Sucess Index: 
+#45.9% Status + 19.8% Education + 4.7% Relastionships + 4.9 % Character + 8.8% Finance + 3.5% Health + 8.4% Work + 4.1 Quality of Life
+#We will fit the variables from the result data frame to one of the 8 categories above. Then Calculate the sucess Index using the 
+# equation above. 
+
 
 
