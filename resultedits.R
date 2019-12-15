@@ -37,8 +37,10 @@ Res$`Respondent health`<-(Res$`Respondent health`-6)*-1
 #To indicates the sense of belonging change if "I Don't feel 'home' in either country" to 0, while others as 1
 Res$`Country feels like home`<-if_else(Res$`Country feels like home`==3,0,1)
 ls<-Res$`Highest education completed`
+#Counting only the ones that have a clear degree status that could be valued from 0-9
 Res$`Highest education completed`<-if_else(ls == 10, as.character(NA),as.character(ls))
 Res$`Highest education completed`<-strip_num(Res$`Highest education completed`)
+# Reverse the numbers values, so the better situation have a higher number value
 Res$`Present work situation`<-(Res$`Present work situation`-9)*-1
 
 #Remove rows that contains NAs 
@@ -53,19 +55,6 @@ colnames(Res)
 #We will fit the variables from the result data frame to one of the 8 categories above. Then Calculate the sucess Index using the 
 
 
-# success_index<-function(row){
-#   quality_index<-(row$`Residence Own house/aprt`*.041)
-#   education_index<-(row$Res$`Highest education completed`+row$`Average English Skill`)*.198
-#   relation_index<-(row$`Has Children`+row$`MariageStatus`)*.047
-#   character_index<-(row$`Country feels like home`+row$`Respodent identity importance`)*.049
-#   finance_index<-(row$`Present income satisfaction`)*.088
-#   health_index<-(row$`Disabled or Ill`+row$`Respondent health`)*.035
-#   work_index<-(row$`Present work situation`+row$`Current occupation satisfaction`)*.084
-#   status_index<-(row$`Current job prestige scores`+row$`Respodent detention/jail/prison`)*.459
-#   success_i=quality_index+education_index+relation_index+character_index+finance_index+health_index+work_index+status_index
-#   return (success_i)
-# }
-
 success_index<-function(row){
   quality_index<-(row[2]*4.1)
   education_index<-(row[4]+row[14])*19.8
@@ -78,7 +67,7 @@ success_index<-function(row){
   success_i=quality_index+education_index+relation_index+character_index+finance_index+health_index+work_index+status_index
   return (success_i/100)
 }
-success_index(Res[2,])
+Res$Success_index<-success_index(Res)
 
 
 
