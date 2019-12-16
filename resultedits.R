@@ -46,8 +46,6 @@ Res$`Present work situation`<-(Res$`Present work situation`-9)*-1
 #Remove rows that contains NAs 
 Res<-na.omit(Res)
 
-colnames(Res)
-
 
 ### Sucess Index#####
 # Based on a study conducted by Populace, in partnership with Gallup: Sucess Index: 
