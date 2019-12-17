@@ -6,6 +6,7 @@ library(caret)  ## package for model comparisons
 library(glmnet) ## package for fitting lasso models
 library(mgcv)   ## package for fitting GAM models
 library(pls)
+library(tidyr) 
 
 da=load("~/Desktop/2019 Fall/Data Science/Final Project/20520-0001-Data.rda")
 da=get(da)
@@ -55,6 +56,7 @@ Res$`Present work situation`<-(Res$`Present work situation`-9)*-1
 
 #Remove rows that contains NAs 
 Res<-na.omit(Res)
+Res$`Current job prestige scores`<-scale(Res$`Current job prestige scores`)
 
 
 ### Sucess Index#####
@@ -208,9 +210,26 @@ rs<- resamples(list(LM = fit.linear,
                     LASSO = fit.lasso,
                     GAM = fit.gam,
                     PCR = fit.pcr))
-summary(rs)
+sumdata<-summary(rs)
+coef(fit.lasso$finalModel, s = fit.lasso$bestTune$lambda)
 
 
+## Graph for evaluation 
+# Getting a copy of the data
+RMSEframe<-data.frame(sumdata$statistics$RMSE)
+#Removing the NA, which are all zero
+RMSEframe<-RMSEframe[1:6]
+#Have a column for the model names
+RMSEframe$Model<-rownames(RMSEframe)
+#change the row names to null
+rownames(RMSEframe)<-NULL
+#Reorganize the dataframe into something plotable 
+RMSEframe <- gather(data = RMSEframe, key = Quatile, value = RMSE, `Min.`,`X1st.Qu.`,`Median`,`Mean`,`X3rd.Qu.`,`Max.`)
 
 
-
+p2 <- RMSEframe %>%
+  ggplot(aes(x=Quatile, y=RMSE,color=Model,group = Model)) +
+  geom_line() +
+  geom_point(size=2) +
+  ggtitle("RMSE Model Comparison") 
+p2
